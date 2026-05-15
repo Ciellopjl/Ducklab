@@ -1,0 +1,232 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Empresa {
+  id           String    @id @default(uuid())
+  slug         String    @unique
+  nome         String
+  logo         String?
+  corPrimaria  String?
+  whatsapp     String?
+  horarioAbertura   String?   @default("18:00")
+  horarioFechamento String?   @default("23:00")
+  diasAbertos       String?   @default("0,1,2,3,4,5,6")
+  taxaEntrega       Float?    @default(5.00)
+  endereco          String?
+  chavePix          String?
+  criadoEm     DateTime  @default(now())
+
+  planoId      String?
+  plano        Plano?    @relation(fields: [planoId], references: [id])
+  assinaturaId String?
+  statusPgto   String    @default("ativo")
+
+  usuarios     EmpresaUsuario[]
+  categorias   Categoria[]
+  produtos     Produto[]
+  tamanhos     Tamanho[]
+  sabores      Sabor[]
+  adicionais   Adicional[]
+  pedidos      Pedido[]
+  cupons       Cupom[]
+  promocoes    Promocao[]
+  logs         Log[]
+}
+
+model EmpresaUsuario {
+  id        String   @id @default(uuid())
+  empresaId String
+  usuarioId String
+  role      String   @default("STAFF") // BOSS ou STAFF
+  criadoEm  DateTime @default(now())
+
+  empresa   Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@unique([empresaId, usuarioId])
+}
+
+model Plano {
+  id            String    @id @default(uuid())
+  nome          String    @unique
+  precoMensal   Float
+  limitePedidos Int?
+  empresas      Empresa[]
+}
+
+model Categoria {
+  id        String    @id @default(uuid())
+  empresaId String?
+  empresa   Empresa?  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  nome      String
+  label     String
+  icone     String
+  adicionaisHabilitados Boolean @default(true)
+  produtos  Produto[]
+  sabores   Sabor[]
+  @@unique([empresaId, nome])
+}
+
+model Produto {
+  id                String    @id @default(uuid())
+  empresaId         String?
+  empresa           Empresa?  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  nome              String
+  descricao         String
+  preco             Float     @default(0)
+  imagem            String
+  disponivel        Boolean   @default(true)
+  badge             String?
+  categoriaId       String
+  criadoEm          DateTime  @default(now())
+  categoria         Categoria @relation(fields: [categoriaId], references: [id], onDelete: Restrict)
+  
+  // Campos para Pizzaria
+  isPizza           Boolean   @default(false)
+  precos            ProdutoPreco[]
+
+  // Campos de Promoção
+  emPromocao        Boolean   @default(false)
+  precoPromocional  Float?
+  badgePromocao     String?   // Ex: "-20%", "OFERTA", "LEVE 2 PAGUE 1"
+}
+
+model Tamanho {
+  id            String    @id @default(uuid())
+  empresaId     String?
+  empresa       Empresa?  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  nome          String    // Ex: P, M, G, Gigante
+  sigla         String?   // Ex: P, M, G
+  maxSabores    Int       @default(1)
+  ordem         Int       @default(0)
+  precos        ProdutoPreco[]
+}
+
+model ProdutoPreco {
+  id        String  @id @default(uuid())
+  produtoId String
+  tamanhoId String
+  preco     Float
+  produto   Produto @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+  tamanho   Tamanho @relation(fields: [tamanhoId], references: [id], onDelete: Cascade)
+  @@unique([produtoId, tamanhoId])
+}
+
+model Sabor {
+  id          String    @id @default(uuid())
+  empresaId   String?
+  empresa     Empresa?  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  categoriaId String?
+  categoria   Categoria? @relation(fields: [categoriaId], references: [id])
+  nome        String
+  descricao   String?
+  imagem      String?
+  disponivel  Boolean   @default(true)
+  precoAdicional Float  @default(0)
+}
+
+model Adicional {
+  id          String    @id @default(uuid())
+  empresaId   String?
+  empresa     Empresa?  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  nome        String
+  preco       Float
+  disponivel  Boolean   @default(true)
+}
+
+model Pedido {
+  id             String   @id @default(uuid())
+  empresaId      String?
+  empresa        Empresa? @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  nomeCliente    String
+  telefone       String
+  endereco       String
+  bairro         String
+  itens          String   @db.Text // JSON string contendo detalhes (sabores, tamanhos, adicionais)
+  total          Float
+  cupomCodigo    String?
+  desconto       Float    @default(0)
+  totalFinal     Float?
+  formaPagamento String
+  trocoParaValor String?
+  observacoes    String?
+  status         String   @default("pendente")
+  serial         String?
+  criadoEm       DateTime @default(now())
+  excluido       Boolean  @default(false)
+
+  @@index([empresaId, status])
+  @@index([criadoEm])
+}
+
+model Cupom {
+  id           String    @id @default(uuid())
+  empresaId    String?
+  empresa      Empresa?  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  codigo       String
+  tipo         String
+  valor        Float
+  pedidoMinimo Float     @default(0)
+  ativo        Boolean   @default(true)
+  validade     DateTime?
+  criadoEm     DateTime  @default(now())
+
+  @@unique([empresaId, codigo])
+  @@index([empresaId, ativo])
+}
+
+model Promocao {
+  id        String   @id @default(uuid())
+  empresaId String?
+  empresa   Empresa? @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  titulo    String
+  descricao String
+  tag       String
+  icone     String
+  cor       String
+  corBorda  String
+}
+
+model Usuario {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  criadoEm     DateTime  @default(now())
+  imagem       String?
+  nome         String?
+  ultimoAcesso DateTime?
+  
+  empresas     EmpresaUsuario[]
+
+  @@index([email])
+}
+
+model Log {
+  id           String   @id @default(uuid())
+  empresaId    String?
+  empresa      Empresa? @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  usuarioEmail String
+  acao         String
+  detalhes     String
+  ip           String?
+  criadoEm     DateTime @default(now())
+}
+
+model Galeria {
+  id        String   @id @default(uuid())
+  nome      String
+  url       String   @db.Text
+  criadoEm  DateTime @default(now())
+}
+
+model RevokedSession {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  revokedAt DateTime @default(now())
+}

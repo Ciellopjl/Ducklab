@@ -1,0 +1,72 @@
+SCHEMA OR DATA FOR Empresa:
+[
+  {
+    "id": "6acf7cbf-07a2-442d-9e50-eff0d18b1510",
+    "slug": "burgue-king",
+    "nome": "burgue king",
+    "logo": null,
+    "corPrimaria": "#dc2626",
+    "criadoEm": "2026-03-21T23:29:55.821Z",
+    "planoId": null,
+    "assinaturaId": null,
+    "statusPgto": "cancelado",
+    "whatsapp": "82988652775",
+    "horarioAbertura": "18:00",
+    "horarioFechamento": "23:00",
+    "taxaEntrega": 5
+  }
+]
+
+Usuarios:
+[
+  {
+    "id": "2c6b4325-444f-4ac8-bf47-640d0d54460f",
+    "email": "ciellorodrigues109@gmail.com",
+    "criadoEm": "2026-03-21T23:24:04.567Z",
+    "imagem": "https://lh3.googleusercontent.com/a/ACg8ocJaWkXAVAEhzNH5m0PqERBOJptw8_sPw1wH8uVRScFur9jIeQ=s96-c",
+    "nome": "Ciello Rodrigues",
+    "ultimoAcesso": "2026-03-21T23:34:48.298Z"
+  },
+  {
+    "id": "c41e050a-295a-47bc-a97e-fa5727422f35",
+    "email": "pjldev0@gmail.com",
+    "criadoEm": "2026-03-21T19:47:32.853Z",
+    "imagem": "https://lh3.googleusercontent.com/a/ACg8ocLbIAFtPVQBRv3AmimtXZIYbcAWgbosyq119P89vgtyz6JialQ=s96-c",
+    "nome": "Pjl",
+    "ultimoAcesso": null
+  },
+  {
+    "id": "f0a3bce9-c9d4-4613-acb3-1b1c3577eb4d",
+    "email": "ciellolisboa023@gmail.com",
+    "criadoEm": "2026-03-16T05:58:45.681Z",
+    "imagem": "https://lh3.googleusercontent.com/a/ACg8ocIIC5SmkfQrmbau0uYrjW9FMFZGj4Y2QCfUR0CJ45ZsuSCq96_4=s96-c",
+    "nome": "Victor",
+    "ultimoAcesso": "2026-03-22T01:09:31.354Z"
+  }
+]
+
+EmpresaUsuarios:
+[
+  {
+    "id": "b44adb74-7e97-4c5d-b9b2-480b56a2ca12",
+    "empresaId": "dc3aad33-fa1a-41e0-bdf3-04f731bddc63",
+    "usuarioId": "f0a3bce9-c9d4-4613-acb3-1b1c3577eb4d",
+    "role": "BOSS",
+    "criadoEm": "2026-03-20T20:33:56.064Z"
+  },
+  {
+    "id": "ce96dcf3-39ad-41a9-b22a-23afc0bd1173",
+    "empresaId": "6acf7cbf-07a2-442d-9e50-eff0d18b1510",
+    "usuarioId": "2c6b4325-444f-4ac8-bf47-640d0d54460f",
+    "role": "BOSS",
+    "criadoEm": "2026-03-21T23:29:55.970Z"
+  },
+  {
+    "id": "4e7f71ac-a750-4939-85be-f275438cac11",
+    "empresaId": "6acf7cbf-07a2-442d-9e50-eff0d18b1510",
+    "usuarioId": "f0a3bce9-c9d4-4613-acb3-1b1c3577eb4d",
+    "role": "BOSS",
+    "criadoEm": "2026-03-21T23:45:45.816Z"
+  }
+]
+
