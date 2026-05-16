@@ -1,15 +1,12 @@
 {
   "name": "ducklab-monorepo",
   "private": true,
-  "workspaces": [
-    "frontend",
-    "backend"
-  ],
   "scripts": {
-    "dev:frontend": "npm run dev -w frontend",
-    "dev:backend": "npm run dev -w backend",
-    "build:frontend": "npm run build -w frontend",
-    "build:backend": "npm run build -w backend",
-    "install:all": "npm install"
+    "dev": "npm run dev:backend & npm run dev:frontend",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "install:all": "cd frontend && npm install && cd ../backend && npm install"
   }
 }

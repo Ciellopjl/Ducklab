@@ -1,4 +1,7 @@
 /** @type {import('next').NextConfig} */
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+
 const nextConfig = {
   // ============================================================================
   // NEXT.JS CONFIG — SEGURANÇA DE PRODUÇÃO
@@ -6,6 +9,16 @@ const nextConfig = {
   
   // Desabilitar header "x-powered-by" para não revelar a tecnologia
   poweredByHeader: false,
+
+  // Proxy todas as chamadas /api/* para o backend
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${BACKEND_URL}/api/:path*`,
+      },
+    ]
+  },
 
   async redirects() {
     return [
