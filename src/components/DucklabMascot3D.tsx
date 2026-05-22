@@ -1,10 +1,11 @@
 'use client'
 
-import { Suspense, useRef, useMemo, useEffect } from 'react'
+import { Suspense, useRef, useMemo, useEffect, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { useGLTF, Environment, Float, Center } from '@react-three/drei'
 import * as THREE from 'three'
 import { SkeletonUtils } from 'three-stdlib'
+import DucklabMascot from './DucklabMascot'
 
 // ─── 3D Mascot Model ────────────────────────────────────────────────────────
 function MascotModel() {
@@ -75,6 +76,32 @@ function CanvasLoader() {
 
 // ─── Scene ──────────────────────────────────────────────────────────────────
 export default function DucklabMascot3DScene() {
+  const [webglSupported, setWebglSupported] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    const detectWebGL = () => {
+      try {
+        const canvas = document.createElement('canvas')
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
+        if (!gl) return false
+        
+        const version = gl.getParameter(gl.VERSION)
+        return !!version
+      } catch (e) {
+        return false
+      }
+    }
+    setWebglSupported(detectWebGL())
+  }, [])
+
+  if (webglSupported === null) {
+    return <div className="absolute inset-0 w-full h-full bg-transparent" />
+  }
+
+  if (!webglSupported) {
+    return <DucklabMascot />
+  }
+
   return (
     <Canvas
       camera={{ position: [0, 2, 8], fov: 50 }}
