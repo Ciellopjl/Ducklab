@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server'
 import cloudinary from '@/lib/cloudinary'
 import { prisma } from '@/lib/prisma'

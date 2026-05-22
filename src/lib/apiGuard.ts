@@ -42,21 +42,26 @@ export async function requireAuth(
   let session = await getServerSession(authOptions)
 
   // BYPASS AUTENTICAÇÃO EM DESENVOLVIMENTO
-  if (!session) {
-    const primeiraEmpresa = await prisma.empresa.findFirst()
-    session = {
-      user: {
-        id: "dev-admin-id",
-        name: "Admin Ducklab",
-        email: "admin@ducklab.com",
-        image: "/logo-duck.png",
-        role: "BOSS",
-        empresaAtiva: primeiraEmpresa?.id || "dev-empresa-id",
-        empresas: [
-          { empresaId: primeiraEmpresa?.id || "dev-empresa-id", role: "BOSS" }
-        ]
-      } as any,
-      expires: "2099-01-01T00:00:00.000Z"
+  if (!session && process.env.NODE_ENV === 'development') {
+    try {
+      const primeiraEmpresa = await prisma.empresa.findFirst()
+      session = {
+        user: {
+          id: "dev-admin-id",
+          name: "Admin Ducklab",
+          email: "admin@ducklab.com",
+          image: "/logo-duck.png",
+          role: "BOSS",
+          empresaAtiva: primeiraEmpresa?.id || "dev-empresa-id",
+          empresas: [
+            { empresaId: primeiraEmpresa?.id || "dev-empresa-id", role: "BOSS" }
+          ]
+        } as any,
+        expires: "2099-01-01T00:00:00.000Z"
+      }
+    } catch (e) {
+      // Falha silenciosa durante o build time se o banco não estiver disponível
+      console.warn('[AUTH BYPASS] Banco de dados indisponível no momento.')
     }
   }
 

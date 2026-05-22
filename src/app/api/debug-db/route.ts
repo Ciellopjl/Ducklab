@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 // Rota de debug DESATIVADA por segurança
 import { NextResponse } from 'next/server'
 
