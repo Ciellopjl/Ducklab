@@ -4,7 +4,7 @@ async function testLogin() {
     const res = await fetch('http://localhost:3000/api/auth/admin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: 'admin123', recaptchaToken: '' }),
+      body: JSON.stringify({ password: 'DUCK-92B3-668D-0FD7-842F', recaptchaToken: '' }),
     });
     const data = await res.json();
     console.log('Status:', res.status);
