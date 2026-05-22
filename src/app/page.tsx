@@ -184,7 +184,6 @@ function PremiumCard({
 }
 
 export default function Home() {
-  const [loadingDone, setLoadingDone] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const shouldReduceMotion = useReducedMotion()
   const [activeSection, setActiveSection] = useState('inicio')
@@ -227,7 +226,6 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    if (!loadingDone) return
     const sections = navItems.map((item) => item.id)
     const observer = new IntersectionObserver(
       (entries) => {
@@ -246,23 +244,12 @@ export default function Home() {
     })
 
     return () => observer.disconnect()
-  }, [loadingDone])
+  }, [])
 
   return (
-    <main className="min-h-screen overflow-clip bg-[#020403] text-white selection:bg-[#00EB69] selection:text-black">
-      <AnimatePresence>
-        {!loadingDone && <LoadingScreen key="loading" onFinish={() => setLoadingDone(true)} />}
-      </AnimatePresence>
+    <main className="min-h-screen overflow-clip bg-[#020403] text-white selection:bg-[#00EB69] selection:text-black animate-page-fade">
 
-      <AnimatePresence>
-        {loadingDone && (
-          <motion.div
-            key="landing"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, ease: easePremium }}
-            className="relative"
-          >
+      <div className="relative">
             <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden="true">
               <motion.div
                 animate={
@@ -880,11 +867,11 @@ export default function Home() {
                   </div>
                 </motion.div>
               </section>
-            </div>
+      </div>
 
 
 
-            <footer className="relative z-10 border-t border-white/5 bg-[#050505] pt-20 pb-8">
+      <footer className="relative z-10 border-t border-white/5 bg-[#050505] pt-20 pb-8">
               <div className="mx-auto w-full px-8 md:px-16 lg:px-24">
                 <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr_1fr] lg:gap-8">
                   {/* Left Column - About & Contact */}
@@ -969,12 +956,9 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-            </footer>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </footer>
 
-      {/* Modal de Preview de Mídia (Imagem/Vídeo) */}
+      {/* Modals de Preview de Mídia (Imagem/Vídeo) */}
       <AnimatePresence>
         {previewMedia && (
           <motion.div
@@ -1015,8 +999,8 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* IA Chat flutuante — visível sempre, independente do loading */}
-      {loadingDone && <ErrorBoundary fallback={null}><DucklabAIChat /></ErrorBoundary>}
+      {/* IA Chat flutuante */}
+      <ErrorBoundary fallback={null}><DucklabAIChat /></ErrorBoundary>
     </main>
   )
 }
