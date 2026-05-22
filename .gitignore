@@ -1,11 +1,106 @@
-node_modules/
-.next/
-dist/
-build/
-.env
-*.db
-*.log
+# ============================================================================
+# GITIGNORE — PROTEÇÃO MÁXIMA DE CREDENCIAIS
+# ============================================================================
+
+# dependências
+/node_modules
+/.pnp
+.pnp.js
+
+# testes
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# produção
+/build
+
+# misc
 .DS_Store
-backend/node_modules/
-frontend/node_modules/
-frontend/.next/
+*.pem
+Thumbs.db
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ============================================================================
+# 🔒 PROTEÇÃO DE CREDENCIAIS E SECRETS
+# ============================================================================
+
+# Arquivos de ambiente (NUNCA commitar!)
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+.env.staging
+!.env.example
+
+# Chaves e certificados
+*.key
+*.cert
+*.crt
+*.csr
+*.p12
+*.pfx
+
+# ============================================================================
+# 🔒 PROTEÇÃO DE DADOS LOCAIS
+# ============================================================================
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# banco de dados local
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# logs sensíveis (podem conter emails e IPs)
+auditoria_emergencia.log
+heartbeat.log
+*.log
+
+# uploads do usuário
+/public/uploads/*
+!/public/uploads/.gitkeep
+
+# ============================================================================
+# 🔒 SCRIPTS DE DEBUG/DIAGNÓSTICO (NUNCA em produção)
+# ============================================================================
+diagnose_users.ts
+debug_*.js
+debug_*.ts
+fix_*.js
+fix_*.ts
+senior_check.js
+trigger.ts
+check_*.js
+test-db.js
+test_*.js
+reset_roles.ts
+update_whatsapp.*
+replace_colors.js
+replace_donatello.js
+
+# Outputs de debug
+db_output.json
+out.txt
+debug.txt
+build_log*.txt
+prisma_out.txt
+prompt_completo_projeto.txt
+
+# Diretórios de scratch/temp
+/scratch/
+
+.vercel
