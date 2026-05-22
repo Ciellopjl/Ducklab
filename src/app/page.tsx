@@ -957,6 +957,7 @@ export default function Home() {
                 </div>
               </div>
       </footer>
+    </div>
 
       {/* Modals de Preview de Mídia (Imagem/Vídeo) */}
       <AnimatePresence>
