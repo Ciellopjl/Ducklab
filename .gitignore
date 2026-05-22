@@ -104,3 +104,7 @@ prompt_completo_projeto.txt
 /scratch/
 
 .vercel
+
+set-vercel-env.ps1
+update-serial.js
+test-*.js

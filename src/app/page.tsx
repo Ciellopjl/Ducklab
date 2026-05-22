@@ -40,6 +40,7 @@ import {
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import LoadingScreen from '@/components/LoadingScreen'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import dynamic from 'next/dynamic'
 const DucklabMascot3D = dynamic(() => import('@/components/DucklabMascot3D'), { ssr: false })
 const DucklabAIChat = dynamic(() => import('@/components/DucklabAIChat'), { ssr: false })
@@ -413,7 +414,9 @@ export default function Home() {
                 {/* Mascote Unificado — Responsive */}
                 <div className="absolute inset-0 flex items-end justify-center opacity-20 pointer-events-none lg:pointer-events-auto lg:opacity-100 lg:inset-y-0 lg:left-0 lg:w-[52%] lg:items-center lg:pt-20">
                   <div className="relative w-full h-full pointer-events-none lg:pointer-events-auto">
-                    <DucklabMascot3D />
+                    <ErrorBoundary fallback={null}>
+                      <DucklabMascot3D />
+                    </ErrorBoundary>
                   </div>
                 </div>
 
@@ -1013,7 +1016,7 @@ export default function Home() {
       </AnimatePresence>
 
       {/* IA Chat flutuante — visível sempre, independente do loading */}
-      {loadingDone && <DucklabAIChat />}
+      {loadingDone && <ErrorBoundary fallback={null}><DucklabAIChat /></ErrorBoundary>}
     </main>
   )
 }
