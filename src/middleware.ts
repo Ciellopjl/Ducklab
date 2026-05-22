@@ -38,10 +38,13 @@ function applySecurityHeaders(response: NextResponse, nonce: string): NextRespon
   response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload')
   response.headers.delete('x-powered-by')
 
-  const isDev = process.env.NODE_ENV !== 'production'
-  const scriptSrc = isDev
-    ? `'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' https://www.google.com https://www.gstatic.com`
-    : `'self' 'nonce-${nonce}' 'strict-dynamic' https://www.google.com https://www.gstatic.com`
+  const scriptSrc = [
+    "'self'",
+    "'unsafe-inline'",
+    "'unsafe-eval'",
+    "https://www.google.com",
+    "https://www.gstatic.com"
+  ].join(' ')
 
   response.headers.set(
     'Content-Security-Policy',
