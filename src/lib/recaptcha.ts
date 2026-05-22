@@ -23,13 +23,10 @@ export async function verifyRecaptcha(
 ): Promise<RecaptchaValidationResult> {
   const secretKey = process.env.RECAPTCHA_SECRET_KEY
 
-  // Bypass amigável em desenvolvimento se as chaves não estiverem configuradas
-  if (!secretKey || secretKey.startsWith('SUBSTITUA-')) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn(`[RECAPTCHA] Bypass ativo em desenvolvimento devido a chaves não configuradas.`);
-      return { success: true, score: 1.0 }
-    }
-    return { success: false, error: 'Chave secreta do reCAPTCHA não configurada em produção.' }
+  // Bypass amigável se as chaves não estiverem configuradas ou se o bypass estiver explícito
+  if (!secretKey || secretKey.startsWith('SUBSTITUA-') || process.env.RECAPTCHA_BYPASS === 'true') {
+    console.warn(`[RECAPTCHA] Bypass ativo devido a chaves não configuradas ou bypass explícito.`);
+    return { success: true, score: 1.0 }
   }
 
   if (!token) {
