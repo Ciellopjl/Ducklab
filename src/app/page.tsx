@@ -247,7 +247,8 @@ export default function Home() {
   }, [])
 
   return (
-    <main className="min-h-screen overflow-clip bg-[#020403] text-white selection:bg-[#00EB69] selection:text-black animate-page-fade">
+    <>
+      <main className="min-h-screen overflow-clip bg-[#020403] text-white selection:bg-[#00EB69] selection:text-black animate-page-fade">
 
       <div className="relative">
             <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden="true">
@@ -1000,8 +1001,10 @@ export default function Home() {
         )}
       </AnimatePresence>
 
+      </main>
+
       {/* IA Chat flutuante */}
       <ErrorBoundary fallback={null}><DucklabAIChat /></ErrorBoundary>
-    </main>
+    </>
   )
 }

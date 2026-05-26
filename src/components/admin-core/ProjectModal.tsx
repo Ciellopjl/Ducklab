@@ -55,6 +55,29 @@ export default function ProjectModal({ isOpen, onClose, onSave, projectToEdit }:
     return /\.(mp4|webm|ogg)(\?.*)?$/i.test(url)
   }
 
+  // Converte DD/MM/YYYY para YYYY-MM-DD para o input type="date"
+  const formatToInputDate = (dateStr: string): string => {
+    if (!dateStr) return ''
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr
+    const parts = dateStr.split('/')
+    if (parts.length === 3) {
+      const [day, month, year] = parts
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+    }
+    return ''
+  }
+
+  // Converte YYYY-MM-DD para DD/MM/YYYY para salvar no banco
+  const formatToDatabaseDate = (dateStr: string): string => {
+    if (!dateStr) return ''
+    const parts = dateStr.split('-')
+    if (parts.length === 3) {
+      const [year, month, day] = parts
+      return `${day}/${month}/${year}`
+    }
+    return dateStr
+  }
+
   const getCookie = (name: string): string => {
     if (typeof document === 'undefined') return ''
     const value = `; ${document.cookie}`
@@ -71,7 +94,7 @@ export default function ProjectModal({ isOpen, onClose, onSave, projectToEdit }:
         imagem: projectToEdit.imagem,
         categoria: projectToEdit.categoria,
         link: projectToEdit.link || '',
-        data: projectToEdit.data || '',
+        data: formatToInputDate(projectToEdit.data || ''),
         ordem: projectToEdit.ordem,
         destaque: projectToEdit.destaque,
       })
@@ -109,8 +132,14 @@ export default function ProjectModal({ isOpen, onClose, onSave, projectToEdit }:
     setLoading(true)
 
     try {
+      // Convert date to DB format before validation
+      const payload = {
+        ...formData,
+        data: formatToDatabaseDate(formData.data)
+      }
+
       // Validate client side
-      const validData = projectSchema.parse(formData)
+      const validData = projectSchema.parse(payload)
 
       const url = '/api/admin/projects'
       const method = projectToEdit ? 'PUT' : 'POST'
@@ -195,12 +224,11 @@ export default function ProjectModal({ isOpen, onClose, onSave, projectToEdit }:
               <div>
                 <label className="block text-xs uppercase text-[#00ff41]/70 mb-1">Data</label>
                 <input
-                  type="text"
+                  type="date"
                   name="data"
                   value={formData.data}
                   onChange={handleChange}
-                  placeholder="Ex: 15/01/2025"
-                  className="w-full bg-black border border-[#00ff41]/30 p-2 text-white focus:border-[#00ff41] outline-none placeholder:text-gray-700"
+                  className="w-full bg-black border border-[#00ff41]/30 p-2 text-white focus:border-[#00ff41] outline-none scheme-dark"
                 />
               </div>
 

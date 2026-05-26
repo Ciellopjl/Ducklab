@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { Menu, X } from 'lucide-react'
 import ProjectModal from '@/components/admin-core/ProjectModal'
 import EquipeModal from '@/components/admin-core/EquipeModal'
 
@@ -10,6 +11,12 @@ function getCsrfToken(): string {
   if (typeof document === 'undefined') return ''
   const match = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]+)/)
   return match ? match[1] : ''
+}
+
+const isVideoUrl = (url: string) => {
+  if (!url) return false
+  if (url.includes('/video/upload/')) return true
+  return /\.(mp4|webm|ogg)(\?.*)?$/i.test(url)
 }
 
 interface Project {
@@ -40,6 +47,7 @@ interface Equipe {
 export default function AdminDashboard() {
   const adminPath = process.env.NEXT_PUBLIC_ADMIN_PATH || '/hacker-duck'
   const [activeTab, setActiveTab] = useState<'projetos' | 'equipe'>('projetos')
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   
   const [projects, setProjects] = useState<Project[]>([])
   const [equipe, setEquipe] = useState<Equipe[]>([])
@@ -194,14 +202,85 @@ export default function AdminDashboard() {
         </div>
       </aside>
 
+      {/* Mobile Drawer Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 z-20 bg-black/80 backdrop-blur-sm md:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Mobile Drawer */}
+      <aside className={`fixed top-0 left-0 bottom-0 z-30 w-64 bg-[#111] border-r border-[#00ff41]/20 flex flex-col justify-between transition-transform duration-300 ease-in-out md:hidden ${
+        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}>
+        <div className="p-6">
+          <div className="mb-10 text-center border-b border-[#00ff41]/20 pb-6 mt-12">
+            <h1 className="text-xl font-bold tracking-widest uppercase text-white">
+              DUCKLAB <span className="text-[#00ff41]">ADMIN</span>
+            </h1>
+            <p className="text-[10px] text-[#00ff41]/50 mt-1 uppercase tracking-widest">System Control</p>
+          </div>
+          
+          <nav className="flex flex-col gap-2">
+            <button 
+              onClick={() => {
+                setActiveTab('projetos')
+                setIsMobileMenuOpen(false)
+              }}
+              className={`w-full flex items-center gap-3 px-4 py-3 border transition-all font-bold tracking-widest text-sm uppercase ${
+                activeTab === 'projetos' 
+                  ? 'text-[#00ff41] bg-[#00ff41]/10 border-[#00ff41]/50' 
+                  : 'text-gray-500 border-transparent hover:border-[#00ff41]/30 hover:text-[#00ff41]'
+              }`}
+            >
+              {activeTab === 'projetos' && <span className="w-2 h-2 rounded-full bg-[#00ff41] shadow-[0_0_8px_#00ff41] animate-pulse"></span>}
+              PROJETOS
+            </button>
+            <button 
+              onClick={() => {
+                setActiveTab('equipe')
+                setIsMobileMenuOpen(false)
+              }}
+              className={`w-full flex items-center gap-3 px-4 py-3 border transition-all font-bold tracking-widest text-sm uppercase ${
+                activeTab === 'equipe' 
+                  ? 'text-[#00ff41] bg-[#00ff41]/10 border-[#00ff41]/50' 
+                  : 'text-gray-500 border-transparent hover:border-[#00ff41]/30 hover:text-[#00ff41]'
+              }`}
+            >
+              {activeTab === 'equipe' && <span className="w-2 h-2 rounded-full bg-[#00ff41] shadow-[0_0_8px_#00ff41] animate-pulse"></span>}
+              EQUIPE
+            </button>
+          </nav>
+        </div>
+
+        <div className="p-6 border-t border-[#00ff41]/20">
+          <button 
+            onClick={handleLogout}
+            className="w-full flex items-center justify-center gap-2 text-gray-500 hover:text-red-500 hover:bg-red-500/10 px-4 py-3 border border-transparent hover:border-red-500/30 transition-all tracking-widest text-xs uppercase"
+          >
+            [ SAIR DO PAINEL ]
+          </button>
+        </div>
+      </aside>
+
       {/* Main Content */}
-      <main className="flex-1 flex flex-col">
-        <header className="bg-[#111] border-b border-[#00ff41]/20 p-6 flex justify-between items-center sticky top-0 z-10 md:hidden">
-            <h1 className="text-lg font-bold tracking-widest text-[#00ff41]">DUCKLAB ADMIN</h1>
+      <main className="flex-1 flex flex-col min-w-0">
+        <header className="bg-[#111] border-b border-[#00ff41]/20 p-4 flex justify-between items-center sticky top-0 z-10 md:hidden">
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+                className="text-[#00ff41] hover:text-white transition-colors focus:outline-none"
+                aria-label="Menu"
+              >
+                {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              </button>
+              <h1 className="text-lg font-bold tracking-widest text-[#00ff41] uppercase">DUCKLAB ADMIN</h1>
+            </div>
             <button onClick={handleLogout} className="text-red-500 text-xs tracking-widest">[ SAIR ]</button>
         </header>
 
-        <div className="p-6 lg:p-10 flex-1 overflow-y-auto">
+        <div className="p-4 sm:p-6 lg:p-10 flex-1 overflow-y-auto">
           {/* Aba Projetos */}
           {activeTab === 'projetos' && (
             <>
@@ -216,7 +295,7 @@ export default function AdminDashboard() {
                     setProjectToEdit(null)
                     setIsProjectModalOpen(true)
                   }}
-                  className="bg-[#00ff41]/10 border border-[#00ff41] text-[#00ff41] px-6 py-3 font-bold uppercase tracking-widest text-sm hover:bg-[#00ff41] hover:text-black transition-colors"
+                  className="w-full sm:w-auto bg-[#00ff41]/10 border border-[#00ff41] text-[#00ff41] px-6 py-3 font-bold uppercase tracking-widest text-sm hover:bg-[#00ff41] hover:text-black transition-colors text-center"
                 >
                   + NOVO PROJETO
                 </button>
@@ -250,11 +329,22 @@ export default function AdminDashboard() {
                       )}
 
                       <div className="h-48 w-full bg-black border-b border-[#00ff41]/20 overflow-hidden relative">
-                        <img 
-                          src={project.imagem} 
-                          alt={project.titulo}
-                          className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-                        />
+                        {isVideoUrl(project.imagem) ? (
+                          <video 
+                            src={project.imagem} 
+                            autoPlay 
+                            muted 
+                            loop 
+                            playsInline 
+                            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                          />
+                        ) : (
+                          <img 
+                            src={project.imagem} 
+                            alt={project.titulo}
+                            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                          />
+                        )}
                       </div>
                       
                       <div className="p-4 flex-1 flex flex-col">
@@ -310,7 +400,7 @@ export default function AdminDashboard() {
                     setEquipeToEdit(null)
                     setIsEquipeModalOpen(true)
                   }}
-                  className="bg-[#00ff41]/10 border border-[#00ff41] text-[#00ff41] px-6 py-3 font-bold uppercase tracking-widest text-sm hover:bg-[#00ff41] hover:text-black transition-colors"
+                  className="w-full sm:w-auto bg-[#00ff41]/10 border border-[#00ff41] text-[#00ff41] px-6 py-3 font-bold uppercase tracking-widest text-sm hover:bg-[#00ff41] hover:text-black transition-colors text-center"
                 >
                   + NOVO MEMBRO
                 </button>
